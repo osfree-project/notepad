@@ -264,7 +264,9 @@ void DoOpenFile(LPCSTR szFileName)
 	/*  If the file starts with .LOG, add a time/date at the end and set cursor after */
 	if (GetWindowText(Globals.hEdit, log, sizeof(log)/sizeof(log[0])) && !lstrcmp(log, ".LOG"))
 	{
-		SendMessage(Globals.hEdit, EM_SETSEL, GetWindowTextLength(Globals.hEdit), -1);
+		int len = GetWindowTextLength(Globals.hEdit);
+		SendMessage(Globals.hEdit, EM_SETSEL, 1, MAKELPARAM(len, len));
+//		SendMessage(Globals.hEdit, EM_SETSEL, GetWindowTextLength(Globals.hEdit), -1);
 		SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)"\r\n");
 		DIALOG_EditTimeDate();
 		SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)"\r\n");
@@ -626,26 +628,108 @@ VOID DIALOG_EditDelete(VOID)
 
 VOID DIALOG_EditSelectAll(VOID)
 {
-    SendMessage(Globals.hEdit, EM_SETSEL, 0, (LPARAM)-1);
+    int len = GetWindowTextLength(Globals.hEdit);
+//    SendMessage(Globals.hEdit, EM_SETSEL, 0, (LPARAM)-1);
+	SendMessage(Globals.hEdit, EM_SETSEL, 1, MAKELPARAM(0, len));
+}
+
+void FormatDate(char * szDate)
+{
+    struct dosdate_t d;
+    char f[3][5]={"","",""};
+	int i;
+	char dFormat[20]="";
+	char buf[20]="";
+
+	strcpy(dFormat,"%[dMy]/%[dMy]/%[dMy]");
+
+    _dos_getdate (&d);
+
+	if (3==sscanf(Globals.sShortDate, dFormat, &f[0],&f[1],&f[2]))
+	{
+		for (i=0; i<3; i++)
+		{
+			if (!strcmp("d", f[i])) {
+				sprintf(buf, "%d", d.day);
+				strcat(szDate, buf);
+			}
+			else if (!strcmp("dd", f[i])) {
+				sprintf(buf, "%02d", d.day);
+				strcat(szDate, buf);
+			}
+			else if (!strcmp("M", f[i])) {
+				sprintf(buf, "%d", d.month);
+				strcat(szDate, buf);
+			}
+			else if (!strcmp("MM", f[i])) {
+				sprintf(buf, "%02d", d.month);
+				strcat(szDate, buf);
+			}
+			else if (!strcmp("yy", f[i])) {
+				sprintf(buf, "%02d", d.year % 100);
+				strcat(szDate, buf);
+			}
+			else if (!strcmp("yyyy", f[i])) {
+				sprintf(buf, "%04d", d.year);
+				strcat(szDate, buf);
+			} else {
+				//strcat(szDate, "error");
+			};
+			if (i<2) strcat(szDate, Globals.sDate);
+		}
+	}
+}
+ 
+void FormatTime(char * szTime)
+{
+	char tFormat[20]="";
+	struct dostime_t t;
+	int hour;
+	char buf[3]="";
+
+	_dos_gettime (&t);
+
+	if (Globals.iTime) // 24h
+	{
+		hour=t.hour;
+	} else {  // 12h
+		hour=(t.hour % 12)?(t.hour % 12):12;
+	}
+
+	if (Globals.iTLZero) 
+	{
+		sprintf(tFormat, "%02d%s%02d%s", hour, Globals.sTime, t.minute, Globals.sTime);
+	} else {
+		if (hour<10)
+		{
+			sprintf(tFormat, "  %d%s%02d%s", hour, Globals.sTime, t.minute, Globals.sTime);
+		} else {
+			sprintf(tFormat, "%d%s%02d%s", hour, Globals.sTime, t.minute, Globals.sTime);
+		}
+	}
+
+	strcat(tFormat, "%02d");
+		if (!Globals.iTime)
+		{
+			strcat(tFormat, " ");
+			strcat(tFormat, (t.hour<12)?Globals.s1159:Globals.s2359);
+		}
+
+	sprintf(szTime, tFormat, t.second);
 }
 
 VOID DIALOG_EditTimeDate(VOID)
 {
-	/*
-    SYSTEMTIME   st;
-    char        szDate[MAX_STRING_LEN];
-    static const char spaceW[] = { ' ',0 };
+    char        szDate[MAX_STRING_LEN]={0};
 
-    GetLocalTime(&st);
-
-    GetTimeFormat(LOCALE_USER_DEFAULT, 0, &st, NULL, szDate, MAX_STRING_LEN);
+    FormatTime(szDate);
     SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)szDate);
 
-    SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)spaceW);
+    SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)" ");
 
-    GetDateFormat(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, NULL, szDate, MAX_STRING_LEN);
+    szDate[0]='\0';
+    FormatDate(szDate);
     SendMessage(Globals.hEdit, EM_REPLACESEL, TRUE, (LPARAM)szDate);
-	*/
 }
 
 VOID DIALOG_EditWrap(VOID)

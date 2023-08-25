@@ -676,6 +676,16 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE prev, LPSTR cmdline, int show)
 	Globals.hInstance       = hInstance;
 
 	/* Read application configuration */
+
+	/* Read Options from `win.ini' */
+	GetProfileString("intl", "s1159", "AM", Globals.s1159, sizeof(Globals.s1159));
+	GetProfileString("intl", "s2359", "PM", Globals.s2359, sizeof(Globals.s2359));
+	GetProfileString("intl", "sTime", ":", Globals.sTime, sizeof(Globals.sTime));
+	Globals.iTime=GetProfileInt("intl", "iTime", 0);
+	Globals.iTLZero=GetProfileInt("intl", "iTLZero", 0);
+	GetProfileString("intl", "sDate", "/", Globals.sDate, sizeof(Globals.sDate));
+	GetProfileString("intl", "sShortDate", "MM/dd/yy", Globals.sShortDate, sizeof(Globals.sShortDate));
+
 	//NOTEPAD_LoadSettingFromRegistry();
 
 	if (!prev)
