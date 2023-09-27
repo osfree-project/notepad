@@ -363,10 +363,11 @@ static VOID NOTEPAD_InitMenuPopup(HMENU menu, int index)
 static LPSTR NOTEPAD_StrRStr(LPSTR pszSource, LPSTR pszLast, LPSTR pszSrch)
 {
     int len = lstrlen(pszSrch);
+
     pszLast--;
-    while (pszLast >= pszSource)
+    while ((pszLast - pszSource) >=0)
     {
-        if (lstrcmp(pszLast, pszSrch) == 0)
+        if (_fstrncmp(pszLast, pszSrch, len) == 0)
             return pszLast;
         pszLast--;
     }
@@ -376,7 +377,7 @@ static LPSTR NOTEPAD_StrRStr(LPSTR pszSource, LPSTR pszLast, LPSTR pszSrch)
 /***********************************************************************
  * The user activated the Find dialog
  */
-void NOTEPAD_DoFind(FINDREPLACE *fr)
+void NOTEPAD_DoFind(FINDREPLACE FAR *fr)
 {
 	LPSTR content;
 	LPSTR found;
@@ -391,6 +392,7 @@ void NOTEPAD_DoFind(FINDREPLACE *fr)
 	GetWindowText(Globals.hEdit, content, fileLen);
 
 	lpstrFindWhat=GlobalAllocPtr(GPTR,len+1);
+	lstrcpy(lpstrFindWhat, fr->lpstrFindWhat);
 
 	pos=HIWORD(SendMessage(Globals.hEdit, EM_GETSEL, 0, 0));
 
@@ -432,7 +434,7 @@ static LRESULT WINAPI NOTEPAD_WndProc(HWND hWnd, UINT msg, WPARAM wParam,
 {
     if (msg == aFINDMSGSTRING)      /* not a constant so can't be used in switch */
     {
-        FINDREPLACE *fr = (FINDREPLACE *)lParam;
+        FINDREPLACE FAR *fr = (FINDREPLACE FAR *)lParam;
         
         if (fr->Flags & FR_DIALOGTERM)
             Globals.hFindReplaceDlg = NULL;

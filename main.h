@@ -68,7 +68,7 @@ typedef struct
 extern NOTEPAD_GLOBALS Globals;
 
 VOID SetFileName(LPCSTR szFileName);
-void NOTEPAD_DoFind(FINDREPLACE *fr);
+void NOTEPAD_DoFind(FINDREPLACE FAR *fr);
 DWORD get_dpi(void);
 
 #define GlobalPtrHandle(lp) \
