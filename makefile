@@ -21,10 +21,6 @@ ADD_LINKOPT = LIB commdlg.lib, shell.lib
 
 TARGETS = $(PATH)$(PROJ1).exe # subdirs
 
-#$(PATH)$(PROJ1).res: $(PATH)rsrc.rc
-# @$(SAY) WINRES   $^. $(LOG)
-# @winres $^< -I $(%WATCOM)$(SEP)h$(SEP)win -o $^@
-
 .ico: $(MYDIR)res
 
 $(PATH)$(PROJ1).exe: $(PATH)$(PROJ).exe $(MYDIR)rsrc.rc
