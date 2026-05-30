@@ -4,7 +4,6 @@
 ![Standard: C89](https://img.shields.io/badge/standard-C89-lightgrey)
 ![Platform: Win16](https://img.shields.io/badge/platform-Win16-lightgrey)
 ![Status: Stable](https://img.shields.io/badge/status-stable-brightgreen)
-![Based on: Wine Notepad](https://img.shields.io/badge/based%20on-Wine%20Notepad-orange)
 
 ![Screenshot](shot.png)
 
