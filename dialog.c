@@ -304,10 +304,11 @@ VOID DIALOG_FileOpen(VOID)
 	openfilename.lpstrDefExt       = "txt";
 
 
-	if (GetOpenFileName(&openfilename))
-	{
-        	DoOpenFile(openfilename.lpstrFile);
-	}
+	//@todo Disable for win 3.0
+//	if (GetOpenFileName(&openfilename))
+//	{
+//        	DoOpenFile(openfilename.lpstrFile);
+//	}
 }
 
 
@@ -334,11 +335,12 @@ VOID DIALOG_FileSaveAs(VOID)
 	saveas.Flags             = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
 	saveas.lpstrDefExt       = "txt";
 
-	if (GetSaveFileName(&saveas)) {
-		SetFileName(szPath);
-		UpdateWindowCaption();
-		DoSaveFile();
-	}
+	//@todo Disable for win 3.0
+//	if (GetSaveFileName(&saveas)) {
+//		SetFileName(szPath);
+//		UpdateWindowCaption();
+//		DoSaveFile();
+//	}
 }
 
 typedef struct {
@@ -492,7 +494,9 @@ VOID DIALOG_FilePrint(VOID)
     /* Let commdlg manage copy settings */
     printer.nCopies               = (WORD)PD_USEDEVMODECOPIES;
 
-    if (!PrintDlg(&printer)) return;
+	//@todo Disable for win 3.0
+//    if (!PrintDlg(&printer)) return;
+    return;
 
     Globals.hDevMode = printer.hDevMode;
     Globals.hDevNames = printer.hDevNames;
@@ -590,7 +594,8 @@ VOID DIALOG_FilePrinterSetup(VOID)
     printer.Flags               = PD_PRINTSETUP;
     printer.nCopies             = 1;
 
-    PrintDlg(&printer);
+	//@todo Disable for win 3.0
+//    PrintDlg(&printer);
 
     Globals.hDevMode = printer.hDevMode;
     Globals.hDevNames = printer.hDevNames;
@@ -778,16 +783,17 @@ VOID DIALOG_SelectFont(VOID)
     cf.lpLogFont=&lf;
     cf.Flags=CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
 
-    if( ChooseFont(&cf) )
-    {
-        HFONT currfont=Globals.hFont;
-
-        Globals.hFont=CreateFontIndirect( &lf );
-        Globals.lfFont=lf;
-        SendMessage( Globals.hEdit, WM_SETFONT, (WPARAM)Globals.hFont, (LPARAM)TRUE );
-        if( currfont!=0 )
-            DeleteObject( currfont );
-    }
+	//@todo Disable for win 3.0
+//    if( ChooseFont(&cf) )
+//    {
+//        HFONT currfont=Globals.hFont;
+//
+//        Globals.hFont=CreateFontIndirect( &lf );
+//        Globals.lfFont=lf;
+//        SendMessage( Globals.hEdit, WM_SETFONT, (WPARAM)Globals.hFont, (LPARAM)TRUE );
+//        if( currfont!=0 )
+//            DeleteObject( currfont );
+//    }
 }
 
 VOID DIALOG_Search(VOID)
@@ -803,7 +809,8 @@ VOID DIALOG_Search(VOID)
         /* We only need to create the modal FindReplace dialog which will */
         /* notify us of incoming events using hMainWnd Window Messages    */
 
-        Globals.hFindReplaceDlg = FindText(&Globals.find);
+	//@todo Disable for win 3.0
+//        Globals.hFindReplaceDlg = FindText(&Globals.find);
         assert(Globals.hFindReplaceDlg !=0);
 }
 
@@ -832,13 +839,35 @@ VOID DIALOG_HelpHelp(VOID)
     WinHelp(Globals.hMainWnd, helpfileW, HELP_HELPONHELP, 0);
 }
 
+typedef BOOL (WINAPI *SHELLABOUT)(HWND hWnd, LPCSTR lpszCaption, LPCSTR lpszAboutText, HICON hIcon);
+
 VOID DIALOG_HelpAboutNotepad(VOID)
 {
-    char szNotepad[MAX_STRING_LEN];
-    HICON icon = LoadIcon( Globals.hInstance, MAKEINTRESOURCE(IDI_NOTEPAD));
+	char szApp[MAX_STRING_LEN];
+	char szAppRelease[MAX_STRING_LEN];
+	HINSTANCE hShell;
+	SHELLABOUT pShellAbout;
+	WORD oldErrorMode;
+        HICON icon = LoadIcon( Globals.hInstance, MAKEINTRESOURCE(IDI_NOTEPAD));
 
-    LoadString(Globals.hInstance, STRING_NOTEPAD, szNotepad, SIZEOF(szNotepad));
-    ShellAbout(Globals.hMainWnd, szNotepad, NULL, icon);
+	LoadString(Globals.hInstance, STRING_NOTEPAD, szApp, sizeof(szApp));
+	lstrcpy(szAppRelease, szApp);
+
+	/* Try shell.dll first (@todo Does'n work under Real Mode Windows 3.0) */
+	oldErrorMode = SetErrorMode(SEM_NOOPENFILEERRORBOX);
+	hShell = LoadLibrary("SHELL");
+	SetErrorMode(oldErrorMode);
+	if (hShell>=HINSTANCE_ERROR)
+	{
+		pShellAbout = (SHELLABOUT)GetProcAddress(hShell, "ShellAbout");
+		if (pShellAbout)
+		{
+			BOOL bRet = pShellAbout(Globals.hMainWnd, szApp, szAppRelease, icon);
+			FreeLibrary(hShell);
+			return ;
+		}
+	FreeLibrary(hShell);
+	}
 }
 
 

@@ -119,3 +119,15 @@ task.\nClose one or more applications to increase the amount of\nfree \
 memory."
 
 }
+
+IDD_ABOUT DIALOG 17, 15, 162, 80
+STYLE DS_MODALFRAME | WS_POPUPWINDOW | WS_DLGFRAME
+CAPTION "About Notepad"
+{
+	CONTROL "osFree Janus",                          -1, "STATIC",  WS_GROUP, 0, 5, 161, 8
+	CONTROL "Notepad",                                 -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 0, 15, 161, 8
+	CONTROL "Version 3.0",                           -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 0, 34, 161, 8
+	CONTROL "Copyright © 2026 osFree.org", -1, "STATIC", SS_CENTER | WS_CHILD | WS_VISIBLE | WS_GROUP, 0, 47, 161, 9
+	CONTROL "OK",                                    51916, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP, 65, 60, 32, 14
+	CONTROL "cckk",                                  -1, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE | WS_GROUP, 14, 14, 26, 30
+}

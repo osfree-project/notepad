@@ -510,8 +510,9 @@ static LRESULT WINAPI NOTEPAD_WndProc(HWND hWnd, UINT msg, WPARAM wParam,
         char szFileName[MAX_PATH];
         HANDLE hDrop = (HANDLE) wParam;
 
-        DragQueryFile(hDrop, 0, szFileName, SIZEOF(szFileName));
-        DragFinish(hDrop);
+	//@todo Disable for win 3.0
+//        DragQueryFile(hDrop, 0, szFileName, SIZEOF(szFileName));
+//        DragFinish(hDrop);
         DoOpenFile(szFileName);
         break;
     }
@@ -717,7 +718,8 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE prev, LPSTR cmdline, int show)
 
 	ShowWindow(Globals.hMainWnd, show);
 	UpdateWindow(Globals.hMainWnd);
-	DragAcceptFiles(Globals.hMainWnd, TRUE);
+	//@todo Disable for win 3.0
+	//DragAcceptFiles(Globals.hMainWnd, TRUE);
 
 	HandleCommandLine(cmdline);
 
