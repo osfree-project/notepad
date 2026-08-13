@@ -1,28 +1,15 @@
 #
-# A Makefile for WinOS/2 Program Manager
-# (c) osFree project,
+# A Makefile for osFree Janus Notepad
+# (c) osFree project
 #
 
-PROJ  = notepad1
-PROJ1 = notepad
-TRGT = $(PROJ1).exe
-DESC = Windows Notepad
-srcfiles = $(p)main$(e) $(p)dialog$(e)
+DESCRIPTION = osFree Janus Notepad
+TARGET_API = WIN
+TARGET_VERSION=310
+SOURCES = main dialog
 
 ADD_COPT = -ms -sg -DDEBUG=1
+LIBS = commdlg shell
 
-CLEAN_ADD = *.mbr
-HEAPSIZE = 4k
-STACKSIZE = 8k
+!include $(%ROOT)tools/mk/build.mk
 
-ADD_LINKOPT = LIB commdlg.lib, shell.lib
-
-!include $(%ROOT)tools/mk/appsw16.mk
-
-TARGETS = $(PATH)$(PROJ1).exe # subdirs
-
-.ico: $(MYDIR)res
-
-$(PATH)$(PROJ1).exe: $(PATH)$(PROJ).exe $(MYDIR)rsrc.rc
- @$(SAY) RESCMP   $^. $(LOG)
- @$(RC) -q -30 -bt=windows $]@ $[@ -fe=$@ -fo=$^@ -i=$(MYDIR) -i=$(%WATCOM)$(SEP)h$(SEP)win
