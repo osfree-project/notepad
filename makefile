@@ -4,7 +4,6 @@
 #
 
 DESCRIPTION = osFree Janus Notepad
-TARGET_API = WIN
 TARGET_VERSION=310
 SOURCES = main dialog
 
