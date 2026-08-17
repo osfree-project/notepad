@@ -7,8 +7,7 @@ DESCRIPTION = osFree Janus Notepad
 TARGET_VERSION=310
 SOURCES = main dialog
 
-ADD_COPT = -ms -sg -DDEBUG=1
-LIBS = commdlg shell
+ADD_COPT = -ms -DDEBUG=1
 
 !include $(%ROOT)tools/mk/build.mk
 
